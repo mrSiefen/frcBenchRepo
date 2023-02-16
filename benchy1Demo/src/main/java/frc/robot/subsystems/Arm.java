@@ -62,53 +62,73 @@ public class Arm extends SubsystemBase{
     }
 
     public CommandBase setArmSpeed(double speed){
+        // Create a new command that will use the parallel command constructor.
         return parallel(
+            // Create a new command that will use the run command constructor.
             run(() -> {
+                // Set the arm motor to the speed passed in
                 armMotor.set(ControlMode.PercentOutput,speed);
+                // Update the shuffleboard
                 updateShuffleboard(this::getArmVelocity, this::getArmPosition);
             }).withTimeout(2)
         ).withName("set arm speed");
     }
 
     public double getArmPosition(){
+        // Return the current position of the arm in ticks
         return armMotor.getSelectedSensorPosition();
     }
 
     public double getArmVelocity(){
+        // Return the current velocity of the arm in ticks per ?ms
         return armMotor.getSelectedSensorVelocity();
     }
 
     public void resetArmPosition(){
+        // Reset the arm position to 0
         armMotor.setSelectedSensorPosition(0);
     }
 
-    public void updateShuffleboard(DoubleSupplier curArmVel, DoubleSupplier curArmPos){
+    public void updateShuffleboard(){
+        // Update the shuffleboard, any values that are passed in prior to the update will be updated, even if they are not used in the update method.
         Shuffleboard.update();
     }
 
     public CommandBase moveToBottomCommand(){
+        // Create a new command that will use the parallel command constructor.
         return parallel (
+            // Create a new command that will use the run command constructor.
             run(() -> {
+                // Set the arm motor to the bottom position
                 armMotor.set(ControlMode.Position, Constants.ArmConstants.kBottomPosition);
-                updateShuffleboard(this::getArmVelocity, this::getArmPosition);
+                // Update the shuffleboard
+                updateShuffleboard();
             }).withTimeout(5)
         ).withName("move arm to bottom");
     }
 
     public CommandBase moveToMiddleCommand(){
+        // Create a new command that will use the parallel command constructor.
         return parallel (
+            // Create a new command that will use the run command constructor.
             run(() -> {
+                // Set the arm motor to the middle position
                 armMotor.set(ControlMode.Position, Constants.ArmConstants.kMiddlePosition);
-                updateShuffleboard(this::getArmVelocity, this::getArmPosition);
+                // Update the shuffleboard
+                updateShuffleboard();
             }).withTimeout(5)
         ).withName("move arm to middle");
     }
 
     public CommandBase moveToTopCommand(){
+        // Create a new command that will use the parallel command constructor.
         return parallel (
+            // Create a new command that will use the run command constructor.
             run(() -> {
+                // Set the arm motor to the top position
                 armMotor.set(ControlMode.Position, Constants.ArmConstants.kTopPosition);
-                updateShuffleboard(this::getArmVelocity, this::getArmPosition);
+                // Update the shuffleboard
+                updateShuffleboard();
             }).withTimeout(5)
         ).withName("move arm to top");
     }

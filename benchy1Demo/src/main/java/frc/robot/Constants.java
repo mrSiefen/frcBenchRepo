@@ -27,6 +27,8 @@ public class Constants {
         public static boolean kMotorInvert = false;
         // Brake or coast the motor
         public static NeutralMode kNeutralMode = NeutralMode.Brake;
+
+        //Arm Position Constants
         public static double kBottomPosition = 0;
         public static double kMiddlePosition = 25000;
         public static double kTopPosition = 50000;
