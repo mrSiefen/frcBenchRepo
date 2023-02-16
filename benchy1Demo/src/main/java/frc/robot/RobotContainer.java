@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.subsystems.Arm;
+//Adding imports to reduce clutter
+import frc.robot.Constants.*;
 
 public class RobotContainer {
 
@@ -24,12 +26,12 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    m_operJoystick.button(Constants.ArmConstants.bottomPosButton).onTrue(m_arm.moveToBottomCommand());
-    m_operJoystick.button(Constants.ArmConstants.middlePosButton).onTrue(m_arm.moveToMiddleCommand());
-    m_operJoystick.button(Constants.ArmConstants.topPosButton).onTrue(m_arm.moveToTopCommand());
+    m_operJoystick.button(ArmConstants.bottomPosButton).onTrue(m_arm.moveToBottomCommand());
+    m_operJoystick.button(ArmConstants.middlePosButton).onTrue(m_arm.moveToMiddleCommand());
+    m_operJoystick.button(ArmConstants.topPosButton).onTrue(m_arm.moveToTopCommand());
 
     // TODO: This is the part thats not working correctly.
-    m_operJoystick.axisGreaterThan(Constants.IOConstants.armAxisNum, 0).onTrue(parallel(m_arm.setArmSpeed(m_operJoystick.getX())));
+    m_operJoystick.axisGreaterThan(IOConstants.armAxisNum, 0).onTrue(parallel(m_arm.setArmSpeed(m_operJoystick.getX())));
   }
 
   public Command getAutonomousCommand() {
