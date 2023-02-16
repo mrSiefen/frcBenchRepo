@@ -11,16 +11,12 @@ import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import edu.wpi.first.wpilibj.Joystick;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-public class Arm extends SubsystemBase{
-    private final WPI_TalonFX armMotor = new WPI_TalonFX(Constants.IOConstants.talonFXPort);
+public class ArmSRX extends SubsystemBase{
+    private final WPI_TalonSRX armMotor = new WPI_TalonSRX(Constants.IOConstants.talonFXPort);
 
-    private double targetArmPosition = 0;
-    private Joystick operJoystick = new Joystick(Constants.IOConstants.operJoystickPort);
-
-    public Arm(){
+    public ArmSRX(){
         // Set up the arm motor
         armMotor.configFactoryDefault();
         armMotor.setSelectedSensorPosition(0, 0, 0);
@@ -52,28 +48,17 @@ public class Arm extends SubsystemBase{
         // Set up the shuffleboard
         Shuffleboard.getTab("Arm").addNumber("Arm Position", curArmPos);
         Shuffleboard.getTab("Arm").addNumber("Arm Velocity", curArmVel);
-        Shuffleboard.getTab("Arm").addNumber("Arm Target Position", () -> targetArmPosition);
-        Shuffleboard.getTab("Arm").addNumber("Arm Error", () -> targetArmPosition - curArmPos.getAsDouble());
-        Shuffleboard.getTab("Arm").add(this);
 
         // Set the default command for the arm. This should be the command that is run when no other commands are running
         setDefaultCommand(
             // Create a new command that will use the runOnce command constructor.
-            run(
+            runOnce(
                 () -> {
-                    //Check for manual control
-                    if (operJoystick.getRawButton(Constants.IOConstants.kArmManualControlButton)){
-                        // check if the arm is at the top or bottom
-                        if (getArmPosition() < Constants.ArmConstants.kTopPosition && -operJoystick.getRawAxis(Constants.IOConstants.armAxisNum) > 0)
-                            // Set the arm motor to the new position based on the joystick
-                            targetArmPosition = targetArmPosition + (-operJoystick.getRawAxis(Constants.IOConstants.armAxisNum) * Constants.ArmConstants.kArmSpeedMultiplier);
-                        else if (getArmPosition() > Constants.ArmConstants.kBottomPosition && -operJoystick.getRawAxis(Constants.IOConstants.armAxisNum) < 0)
-                            // Set the arm motor to the new position based on the joystick
-                            targetArmPosition = targetArmPosition + (-operJoystick.getRawAxis(Constants.IOConstants.armAxisNum) * Constants.ArmConstants.kArmSpeedMultiplier);
-                }
-                    //Hold the arm in place
-                    armMotor.set(ControlMode.Position, targetArmPosition);
-                }).withName("idle arm"));
+                    //Stop the arm motor
+                    armMotor.set(0);
+                })
+                // Give the command a name and 
+                .andThen(run(() -> {})).withName("idle arm"));
     }
 
     public CommandBase setArmSpeed(double speed){
@@ -82,10 +67,11 @@ public class Arm extends SubsystemBase{
             // Create a new command that will use the run command constructor.
             run(() -> {
                 // Set the arm motor to the speed passed in
-                targetArmPosition = targetArmPosition + (speed * Constants.ArmConstants.kArmSpeedMultiplier);
+                armMotor.set(ControlMode.PercentOutput,speed);
                 // Update the shuffleboard
                 updateShuffleboard();
-            })).withName("set arm speed");
+            }).withTimeout(2)
+        ).withName("set arm speed");
     }
 
     public double getArmPosition(){
@@ -110,31 +96,40 @@ public class Arm extends SubsystemBase{
 
     public CommandBase moveToBottomCommand(){
         // Create a new command that will use the parallel command constructor.
-        return runOnce(() -> {
+        return parallel (
+            // Create a new command that will use the run command constructor.
+            run(() -> {
                 // Set the arm motor to the bottom position
-                targetArmPosition = Constants.ArmConstants.kBottomPosition;
+                armMotor.set(ControlMode.Position, Constants.ArmConstants.kBottomPosition);
                 // Update the shuffleboard
                 updateShuffleboard();
-            }).withName("move arm to bottom");
+            }).withTimeout(5)
+        ).withName("move arm to bottom");
     }
 
     public CommandBase moveToMiddleCommand(){
         // Create a new command that will use the parallel command constructor.
-        return runOnce(() -> {
+        return parallel (
+            // Create a new command that will use the run command constructor.
+            run(() -> {
                 // Set the arm motor to the middle position
-                targetArmPosition = Constants.ArmConstants.kMiddlePosition;
+                armMotor.set(ControlMode.Position, Constants.ArmConstants.kMiddlePosition);
                 // Update the shuffleboard
                 updateShuffleboard();
-            }).withName("move arm to middle");
+            }).withTimeout(5)
+        ).withName("move arm to middle");
     }
 
     public CommandBase moveToTopCommand(){
         // Create a new command that will use the parallel command constructor.
-        return runOnce(() -> {
+        return parallel (
+            // Create a new command that will use the run command constructor.
+            run(() -> {
                 // Set the arm motor to the top position
-                targetArmPosition = Constants.ArmConstants.kTopPosition;
+                armMotor.set(ControlMode.Position, Constants.ArmConstants.kTopPosition);
                 // Update the shuffleboard
                 updateShuffleboard();
-            }).withName("move arm to top");
+            }).withTimeout(5)
+        ).withName("move arm to top");
     }
 }

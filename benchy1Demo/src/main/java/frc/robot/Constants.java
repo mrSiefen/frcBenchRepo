@@ -12,6 +12,7 @@ public class Constants {
         public static final int pdpPort = 0;
         public static int operJoystickPort = 1;
         public static int armAxisNum = 1;
+        public static int kArmManualControlButton = 3;
     }
 
     public static final class ArmConstants {
@@ -36,6 +37,7 @@ public class Constants {
         public static double armAxisThreshold = 0.1;
         public static int middlePosButton = 10;
         public static int topPosButton = 8;
+        public static double kArmSpeedMultiplier = 500;
 
         // PID gains may have to be adjusted based on the responsiveness of control loop. PID is used to correct sensor input.
         /* It is composed of three terms: proportional, integral, and derivative.
@@ -57,6 +59,6 @@ public class Constants {
         // kIzone is the integral zone, which is the range of error where the integral gain
         public static final int kIzone = 0;
         // kPeakOutput is the maximum output of the PID loop, used to set the limit of the motor
-        public static final double kPeakOutput = 0.05;
+        public static final double kPeakOutput = 0.2;
     }
 }

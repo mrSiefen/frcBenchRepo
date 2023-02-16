@@ -28,8 +28,6 @@ public class RobotContainer {
     m_operJoystick.button(Constants.ArmConstants.middlePosButton).onTrue(m_arm.moveToMiddleCommand());
     m_operJoystick.button(Constants.ArmConstants.topPosButton).onTrue(m_arm.moveToTopCommand());
 
-    // TODO: This is the part thats not working correctly.
-    m_operJoystick.axisGreaterThan(Constants.IOConstants.armAxisNum, 0).onTrue(parallel(m_arm.setArmSpeed(m_operJoystick.getX())));
   }
 
   public Command getAutonomousCommand() {
